@@ -35,3 +35,11 @@
     padding-left: 15px;
 
 }
+.button_holder{
+    display: flex;
+    flex-direction: row;
+}
+.spinner{
+    /* position: absolute; */
+    margin-top: 20px;
+}
