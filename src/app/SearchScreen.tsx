@@ -1,32 +1,35 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ChangeEvent } from 'react'
 import { AudioOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Select, Input, List, Avatar, Button, Spin, Alert } from 'antd';
 import './styles.css'
 
 import 'antd/dist/antd.css';
 import axios from 'axios'
-// import './index.css';
-
 
 const { Option } = Select;
 const { Search } = Input;
 
-const SearchScreen = () => {
+interface Props {
+    latitude: number;
+    longitude: number;
+}
 
-    const [searchResult, setsearchResult] = useState([])
-    const [filteredResult, setfilteredResult] = useState([])
-    const [localSearch, setlocalSearch] = useState([])
-    const [disableButton, setdisableButton] = useState(false)
-    const [showSpinner, setshowSpinner] = useState(false)
-    const [showLoadingError, setshowLoadingError] = useState(false)
-    const [lat, setLat] = useState('')
-    const [lon, setLon] = useState('')
-    const [errorMsg, seterrorMsg] = useState('')
-    const [radius, setRadius] = useState(20)
+const SearchScreen: React.FC<Props> = ({}) =>  {
+
+    const [searchResult, setsearchResult] = useState<any[]>([])
+    const [filteredResult, setfilteredResult] = useState<any[]>([])
+    const [localSearch, setlocalSearch] = useState<any[]>([])
+    const [disableButton, setdisableButton] = useState<boolean>(false)
+    const [showSpinner, setshowSpinner] = useState<boolean>(false)
+    const [showLoadingError, setshowLoadingError] = useState<boolean>(false)
+    const [lat, setLat] = useState<number>(0)
+    const [lon, setLon] = useState<number>(0)
+    const [errorMsg, seterrorMsg] = useState<string>('')
+    const [radius, setRadius] = useState<number>(20)
 
     const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
-    // let searchResult =[]
+   
 
     useEffect(() => {
 
@@ -51,7 +54,7 @@ const SearchScreen = () => {
 
 console.log('search result:', searchResult)
 
-    const handleChange = (value) => {
+    const handleChange = (value: string) => {
         console.log(`selected ${value}`);
         setRadius(parseInt(value) * 1000)
         console.log('New Radius: ', radius)
@@ -59,11 +62,9 @@ console.log('search result:', searchResult)
 
     const handleSearch = () => {
 
-        console.log('Searching')
 
         setshowSpinner(true)
-        // axios.post('https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=1500&type=hospitals&keyword=medical&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=6.6252,3.3441')
-        axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=${lat},${lon}`)
+        axios.post(`https://cors-anywhere.herokuapp.com/maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=${lat},${lon}`)
             .then(places => {
                 if (places) {
                     setsearchResult(places.data.results)
@@ -85,9 +86,9 @@ console.log('search result:', searchResult)
             })
     }
 
-    const handleSearchFilter = e => {
+    const handleSearchFilter = (event: ChangeEvent<HTMLInputElement>) => {
      //   const value = e.target.value;
-        let query = e.target.value;
+        let query = event.target.value;
         // const currValue = e.target.value.split(' ');
         const filteredData = searchResult && searchResult.filter(entry =>
             entry.name && entry.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -105,8 +106,6 @@ console.log('search result:', searchResult)
 
         //console.log('====', value)
     }
-
-    console.log('===----------', filteredResult)
 
     let options;
     if (localSearch.length) {
@@ -134,7 +133,9 @@ console.log('search result:', searchResult)
             <div>
                 <h5>Please Select search Radius and search button to search for hospitals near you  </h5>
                 <div className='radius_option'>
-                    <Select defaultValue="20" style={{ width: 120 }} onChange={handleChange}>
+                    <Select defaultValue="Select radius" style={{ width: 120 }} onChange={handleChange}>
+                        <Option value="5">5</Option>
+                        <Option value="10">10</Option>
                         <Option value="20">20</Option>
                         <Option value="30">30</Option>
                         <Option value="50">50</Option>
