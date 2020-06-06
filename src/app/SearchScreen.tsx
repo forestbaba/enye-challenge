@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from 'react'
-import { AudioOutlined, LoadingOutlined } from '@ant-design/icons';
+import {  LoadingOutlined } from '@ant-design/icons';
 import { Select, Input, List, Avatar, Button, Spin, Alert } from 'antd';
 import './styles.css'
 
@@ -7,7 +7,6 @@ import 'antd/dist/antd.css';
 import axios from 'axios'
 
 const { Option } = Select;
-const { Search } = Input;
 
 interface Props {
     latitude: number;
@@ -18,10 +17,10 @@ const SearchScreen: React.FC<Props> = ({}) =>  {
 
     const [searchResult, setsearchResult] = useState<any[]>([])
     const [filteredResult, setfilteredResult] = useState<any[]>([])
-    const [localSearch, setlocalSearch] = useState<any[]>([])
-    const [disableButton, setdisableButton] = useState<boolean>(false)
+    const [localSearch] = useState<any[]>([])
+    const [disableButton] = useState<boolean>(false)
     const [showSpinner, setshowSpinner] = useState<boolean>(false)
-    const [showLoadingError, setshowLoadingError] = useState<boolean>(false)
+    const [showLoadingError] = useState<boolean>(false)
     const [lat, setLat] = useState<number>(0)
     const [lon, setLon] = useState<number>(0)
     const [errorMsg, seterrorMsg] = useState<string>('')
@@ -64,7 +63,7 @@ console.log('search result:', searchResult)
 
 
         setshowSpinner(true)
-        axios.post(`https://cors-anywhere.herokuapp.com/maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=${lat},${lon}`)
+        axios.get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=${lat},${lon}`)
             .then(places => {
                 if (places) {
                     setsearchResult(places.data.results)
