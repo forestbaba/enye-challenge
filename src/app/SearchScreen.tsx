@@ -61,9 +61,9 @@ console.log('search result:', searchResult)
 
     const handleSearch = () => {
 
-
+       // AIzaSyB26e6iXj1nK2fKr9j8X77Q68mp3oYVxOQ
         setshowSpinner(true)
-        axios.post(`https://limitless-fortress-61614.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius * 1000}&type=hospitals&keyword=medical&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=${lat},${lon}`)
+        axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${lat},${lon}`)
             .then(places => {
                 if (places) {
                     setsearchResult(places.data.results)
@@ -95,7 +95,7 @@ console.log('search result:', searchResult)
             // entry.paymentReference && entry.paymentReference.toLowerCase().includes(currValue.toLowerCase())
         );
         if (filteredData) {
-            setfilteredResult(filteredData);
+            setfilteredResult(filteredData); 
         } else {
             setfilteredResult(searchResult)
         }
