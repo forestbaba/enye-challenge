@@ -63,7 +63,7 @@ console.log('search result:', searchResult)
 
 
         setshowSpinner(true)
-        axios.post(`https://limitless-fortress-61614.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=${lat},${lon}`)
+        axios.post(`https://limitless-fortress-61614.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius * 1000}&type=hospitals&keyword=medical&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=${lat},${lon}`)
             .then(places => {
                 if (places) {
                     setsearchResult(places.data.results)
