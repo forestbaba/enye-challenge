@@ -257,7 +257,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						{searchHistory && searchHistory.length > 0 ? <p className='stitle'>Search History: </p> : null}
 
 						{searchHistory && searchHistory.length > 0 ? (
-							searchHistory.map((item: any, index: number) => {
+							searchHistory.reverse().map((item: any, index: number) => {
 								return (
 									<>
 										<p onClick={handleSearchItem} data-index={index} className="searchList">
