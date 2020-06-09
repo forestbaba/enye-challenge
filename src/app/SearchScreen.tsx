@@ -230,7 +230,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						<Option value="hospitals">Hospitals</Option>
 						<Option value="pharmacy">Pharmacies</Option>
 						<Option value="clinics">Clinics</Option>
-						<Option value="Medical Offices">Medical Offices</Option>
+						<Option value="medical offices">Medical Offices</Option>
 					</Select>
 					<Button type="primary" className="action_button" disabled={disableButton} onClick={handleSearch}>
 						Search
