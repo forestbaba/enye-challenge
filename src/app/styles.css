@@ -14,7 +14,7 @@
 }
 
 .searchbar {
-    top: 20%;
+    top: 30%;
     margin-top: 10%;
 }
 
@@ -24,10 +24,11 @@
     margin-bottom: 20px;
 }
 
+
 .radius_option {
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .radius_option p {
@@ -35,11 +36,18 @@
     padding-left: 15px;
 
 }
-.button_holder{
+
+.button_holder {
     display: flex;
     flex-direction: row;
 }
-.spinner{
+
+.spinner {
     /* position: absolute; */
     margin-top: 20px;
+}
+
+.searchList {
+    padding: 10px;
+    border-bottom: 1px solid #d9d9db;
 }
