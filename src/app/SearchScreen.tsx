@@ -143,6 +143,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 				if (places) {
 					setsearchResult(places.data.results);
 					setsearchHistory(searchHis)
+					searchHistory.reverse()
 
 					setshowSpinner(false);
 				}
@@ -240,9 +241,6 @@ const SearchScreen: React.FC<Props> = ({}) => {
 				</div>
 				{showLoadingError ? <p>Error, please select radius to search</p> : null}
 
-				{/* <div className="button_holder">
-					
-				</div> */}
 				<Button
 					type="primary"
 					icon={showHistorySpinner ? <LoadingOutlined /> : <HistoryOutlined />}
@@ -257,7 +255,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						{searchHistory && searchHistory.length > 0 ? <p className='stitle'>Search History: </p> : null}
 
 						{searchHistory && searchHistory.length > 0 ? (
-							searchHistory.reverse().map((item: any, index: number) => {
+							searchHistory.map((item: any, index: number) => {
 								return (
 									<>
 										<p onClick={handleSearchItem} data-index={index} className="searchList">
