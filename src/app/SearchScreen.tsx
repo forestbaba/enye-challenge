@@ -240,18 +240,21 @@ const SearchScreen: React.FC<Props> = ({}) => {
 					Load search history
 				</Button>
 			</div>
+			{searchHistory && searchHistory.length > 0 ? <p>History results: </p> : null}
+
 			{searchHistory && searchHistory.length > 0 ? (
 				searchHistory.map((item: any, index: number) => {
 					return (
+						<>
 						<p onClick={handleSearchItem} data-index={index} className="searchList">
 							{item.body}
-						</p>
+							</p>
+							</>
 					);
 				})
 			) : null}
 			{filteredResult && filteredResult.length > 0 ? (
 				<div>
-					<p>Search results: </p>
 					<Input
 						placeholder="Filter to hospitals, Pharmacies, Clinic and Medical Offices.."
 						size="large"
@@ -260,8 +263,11 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						className="searchbar"
 						// value={siValue}
 					/>
+
 					<button onClick={handleSearchKey}
 						style={{ width: '150px', marginTop: '20px' }}>Search</button>
+
+					<p>Search results: </p>
 
 					<List
 						itemLayout="horizontal"
