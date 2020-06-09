@@ -78,11 +78,17 @@ const SearchScreen: React.FC<Props> = ({}) => {
 		//AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY  ====>live
 
 		setshowSpinner(true);
+		let searchHis: any[] = [];
+
+		// axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=${searchKey}&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=${lat},${lon}`)
+
 		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${lat},${lon}`)
 	
 			.then((places) => {
 				if (places) {
 					setsearchResult(places.data.results);
+					setsearchHistory(searchHis)
+
 					setshowSpinner(false);
 				}
 				if (places.data.status.toString() === 'ZERO_RESULTS') {
@@ -124,17 +130,20 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 	const handleSearchItem = (event: MouseEvent<HTMLElement>) => {
 		const { index } = (event.target as HTMLElement).dataset;
+		let searchHis: any[] = [];
 
 		let nIndex: string = index as string;
 		// nIndex = index ||0
 
 
-		// axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${searchHistory[parseInt(nIndex)].radius}&type=hospitals&keyword=${searchHistory[parseInt(nIndex)].searchQuery}&key=&location=${lat},${lon}`)
+		// axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${searchHistory[parseInt(nIndex)].radius}&type=hospitals&keyword=${searchHistory[parseInt(nIndex)].searchQuery}&key=AIzaSyB26e6iXj1nK2fKr9j8X77Q68mp3oYVxOQ&location=${lat},${lon}`)
 
 		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${lat},${lon}`)
 			.then((places) => {
 				if (places) {
 					setsearchResult(places.data.results);
+					setsearchHistory(searchHis)
+
 					setshowSpinner(false);
 				}
 				if (places.data.status.toString() === 'ZERO_RESULTS') {
@@ -205,59 +214,69 @@ const SearchScreen: React.FC<Props> = ({}) => {
 			) : null}
 
 			<div>
-				<h5>Please Select search Radius and search button to search for hospitals near you </h5>
+				{/* <h5>Please Select search Radius and search button to search for hospitals near you </h5> */}
 				<div className="radius_option">
-					<Select defaultValue="Select radius" style={{ width: 200 }} onChange={handleChange}>
-						<Option value="5">5</Option>
-						<Option value="10">10</Option>
-						<Option value="20">20</Option>
-						<Option value="30">30</Option>
-						<Option value="50">50</Option>
-						<Option value="100">100</Option>
+					<Select defaultValue="5 km" style={{ width: 200 }} onChange={handleChange}>
+						<Option value="5">5 km</Option>
+						<Option value="10">10 km</Option>
+						<Option value="20">20 km</Option>
+						<Option value="30">30 km</Option>
+						<Option value="50">50 km</Option>
+						<Option value="100">100 km</Option>
 					</Select>
-					<br />
 
-					<h5>Select your target body: </h5>
+					{/* <h5>Select your target body: </h5> */}
 					<Select defaultValue="Select Search Body" style={{ width: 200 }} onChange={handleSearchBodyChange}>
 						<Option value="hospitals">Hospitals</Option>
 						<Option value="pharmacy">Pharmacies</Option>
 						<Option value="clinics">Clinics</Option>
 						<Option value="Medical Offices">Medical Offices</Option>
 					</Select>
-
-					{showLoadingError ? <p>Error, please select radius to search</p> : null}
-				</div>
-				<div className="button_holder">
 					<Button type="primary" className="action_button" disabled={disableButton} onClick={handleSearch}>
 						Search
 					</Button>
 					<div className="spinner">{showSpinner ? <Spin indicator={antIcon} /> : null}</div>
+
 				</div>
+				{showLoadingError ? <p>Error, please select radius to search</p> : null}
+
+				{/* <div className="button_holder">
+					
+				</div> */}
 				<Button
 					type="primary"
 					icon={showHistorySpinner ? <LoadingOutlined /> : <HistoryOutlined />}
-					onClick={loadHistory}
-				>
+					onClick={loadHistory}>
 					Load search history
 				</Button>
 			</div>
-			{searchHistory && searchHistory.length > 0 ? <p>History results: </p> : null}
+			{
+				searchHistory && searchHistory.length > 0 ?
+					<div className='scard'>
 
-			{searchHistory && searchHistory.length > 0 ? (
-				searchHistory.map((item: any, index: number) => {
-					return (
-						<>
-						<p onClick={handleSearchItem} data-index={index} className="searchList">
-							{item.body}
-							</p>
-							</>
-					);
-				})
-			) : null}
+						{searchHistory && searchHistory.length > 0 ? <p className='stitle'>Search History: </p> : null}
+
+						{searchHistory && searchHistory.length > 0 ? (
+							searchHistory.map((item: any, index: number) => {
+								return (
+									<>
+										<p onClick={handleSearchItem} data-index={index} className="searchList">
+											{item.body}
+										</p>
+									</>
+								);
+							})
+						) : null}
+					</div> : null
+
+			}
+			
+			
 			{filteredResult && filteredResult.length > 0 ? (
 				<div>
+					<div className='search-and-button'>
 					<Input
-						placeholder="Filter to hospitals, Pharmacies, Clinic and Medical Offices.."
+						placeholder="Filter for hospitals, Pharmacies, Clinic and Medical Offices.."
 						size="large"
 						// suffix={suffix}
 						onChange={handleSearchFilter}
@@ -267,8 +286,8 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 					<button onClick={handleSearchKey}
 						style={{ width: '150px', marginTop: '20px' }}>Search</button>
-
-					<p>Search results: </p>
+					</div>
+					<p className='search-title'>Search results: </p>
 
 					<List
 						itemLayout="horizontal"
@@ -284,12 +303,11 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						)}
 					/>
 				</div>
-			) : searchResult.length > 0 ? (
+			 ) : searchResult.length > 0 ? (
 					<>
 				<Input
 					placeholder="Filter to hospitals..."
 					size="large"
-					// suffix={suffix}
 					onChange={handleSearchFilter}
 					className="searchbar"
 					style={{ marginTop: '20px' }}
@@ -299,7 +317,9 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						style={{width:'150px',marginTop:'20px' }}>Search</button>
 						</>
 
-			) : null}
+				) : null} 
+			
+			
 		</div>
 	);
 };

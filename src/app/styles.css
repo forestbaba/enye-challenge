@@ -20,15 +20,15 @@
 
 .action_button {
     width: 200px;
-    margin-top: 20px;
     margin-bottom: 20px;
 }
 
 
 .radius_option {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
+    margin-top: 10px;
 }
 
 .radius_option p {
@@ -44,10 +44,44 @@
 
 .spinner {
     /* position: absolute; */
-    margin-top: 20px;
+    margin-left: 20px;
 }
 
 .searchList {
     padding: 10px;
     border-bottom: 1px solid #d9d9db;
+    font-size: 18px;
 }
+.searchList:hover{
+    cursor: pointer;
+}
+
+.search-and-button {
+    /* display: flex; */
+    /* flex-direction: row; */
+
+}
+
+.search-title {
+    font-weight: bold;
+    padding-top: 25px;
+    font-size: 18px;
+}
+
+.scard {
+    position:inherit;
+    /* top:200px; */
+    border-width: 2px;
+    border-radius: 5px;
+    padding: 5px;
+    padding-top: 10px;
+  box-shadow: 5px 5px 5px 5px #d9d9db;
+  margin-top:10px;
+  margin-bottom: 10px;
+  }
+
+  .scard .stitle{
+
+    font-weight: bold;
+    font-size: 20px;
+  }
