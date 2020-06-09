@@ -76,8 +76,10 @@ const SearchScreen: React.FC<Props> = ({}) => {
 		// AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc ====>test 0
 		// AIzaSyB26e6iXj1nK2fKr9j8X77Q68mp3oYVxOQ ====>test
 		//AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY  ====>live
+		console.log('APIEKEY: ', `${process.env.GOOGLE_KEY}`)
+
 		setshowSpinner(true);
-		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=AIzaSyB26e6iXj1nK2fKr9j8X77Q68mp3oYVxOQ&location=${lat},${lon}`)
+		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=${process.env.GOOGLE_KEY}&location=${lat},${lon}`)
 	
 			.then((places) => {
 				if (places) {
@@ -130,7 +132,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 		// axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${searchHistory[parseInt(nIndex)].radius}&type=hospitals&keyword=${searchHistory[parseInt(nIndex)].searchQuery}&key=&location=${lat},${lon}`)
 
-		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=AIzaSyB26e6iXj1nK2fKr9j8X77Q68mp3oYVxOQ&location=${lat},${lon}`)
+		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=medical&key=${process.env.GOOGLE_KEY}&location=${lat},${lon}`)
 			.then((places) => {
 				if (places) {
 					setsearchResult(places.data.results);
