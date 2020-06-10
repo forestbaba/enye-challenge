@@ -316,8 +316,10 @@ const SearchScreen: React.FC<Props> = ({}) => {
 								
 						
 					value={suggestedValue}
-						/>
-							<HistoryOutlined className='searchIconx' onClick={loadHistory}/>
+								/>
+								<div className='searchIconx'>
+									<HistoryOutlined  onClick={loadHistory} />
+								</div>
 						</div>
 						
 						{
