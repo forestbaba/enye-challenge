@@ -1,14 +1,22 @@
+.parent{
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    right: 0;
+    left: 0;
+}
 .container {
+    position: absolute;
     display: flex;
     /* justify-content: center; */
     /* align-items: center; */
     flex-direction: column;
     /* background-color: red; */
-    left: 50%;
-    top: 20%;
-    right: 20%;
+    left: 20%;
+    top: -5%;
+    right: 30%;
     width: 80%;
-    margin: auto;
+    /* margin: auto; */
     /* width: 50%; */
     padding-top: 50px;
 }
@@ -22,6 +30,7 @@
 .action_button {
     width: 200px;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 
@@ -80,7 +89,7 @@
     margin-top: 10px;
     margin-bottom: 10px;
     width: 30%;
-    left: 29.5%;
+    left: 32.5%;
     z-index: 100;
     background-color: white;
     margin-top: 40px;
@@ -96,8 +105,8 @@
     margin-top: 10px;
     margin-bottom: 10px;
     width: 30%;
-    left: 29.5%;
-    z-index: 100;
+    left: 32.5%;
+    z-index: 1000;
     background-color: white;
     margin-top: 40px;
 }

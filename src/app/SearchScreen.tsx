@@ -9,13 +9,13 @@ import { dataBase } from './util/FirebaseInit';
 
 
 const { Search } = Input;
-const { TabPane} = Tabs;
 const { Option } = Select;
 
 interface Props {
 	latitude: number;
 	longitude: number;
 	searchIndex: Number;
+
 }
 
 const SearchScreen: React.FC<Props> = ({}) => {
@@ -31,6 +31,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 	const [ lat, setLat ] = useState<number>(0);
 	const [ lon, setLon ] = useState<number>(0);
 	const [ errorMsg, seterrorMsg ] = useState<string>('');
+	const [ suggestedValue, setsuggestedValue ] = useState<string>('');
 	const [ searchKey, setsearchKey ] = useState<string>('');
 	const [ radius, setRadius ] = useState<number>(20);
 	const [ siValue, setsiValue ] = useState<string>('');
@@ -42,6 +43,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 	useEffect(
 		() => {
+			// setsuggestedValue('call me')
 			setfilteredResult(searchResult);
 
 			let location = null;
@@ -62,28 +64,28 @@ const SearchScreen: React.FC<Props> = ({}) => {
 		},
 		[ searchResult, errorMsg ]
 	);
-	useEffect(() => {
-		let searchHis: any[] = [];
+	// useEffect(() => {
+	// 	let searchHis: any[] = [];
 
-		setshowHistorySpinner(true);
+	// 	setshowHistorySpinner(true);
 
-		console.log('load history');
-		dataBase
-			.collection('searchhistory')
-			.get()
-			.then((item) => {
-				item.docs.forEach((doc, i) => {
-					console.log('ITEM: ', doc.data());
-					searchHis.push(doc.data());
-				});
-				setsearchHistory(searchHis);
-				setshowHistorySpinner(false);
-			})
-			.catch((err) => {
-				console.log('ERR: ', err);
-			});
+	// 	console.log('load history');
+	// 	dataBase
+	// 		.collection('searchhistory')
+	// 		.get()
+	// 		.then((item) => {
+	// 			item.docs.forEach((doc, i) => {
+	// 				console.log('ITEM: ', doc.data());
+	// 				searchHis.push(doc.data());
+	// 			});
+	// 			setsearchHistory(searchHis);
+	// 			setshowHistorySpinner(false);
+	// 		})
+	// 		.catch((err) => {
+	// 			console.log('ERR: ', err);
+	// 		});
 
-	},[])
+	// },[])
 
 	// console.log('search result:', searchResult);
 
@@ -105,16 +107,35 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 		setshowSpinner(true);
 		let searchHis: any[] = [];
+		
 
 		// axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=${searchKey}&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=${lat},${lon}`)
 
-		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=${searchKey}&keyword=medical&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${lat},${lon}`)
+		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=medical&keyword=${searchKey}&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${lat},${lon}`)
 	
 			.then((places) => {
 				if (places) {
 					setsearchResult(places.data.results);
 					setsearchHistory(searchHis)
 
+					if (suggestedValue) {
+						dataBase
+							.collection('searchhistory')
+							.add({
+								radius: radius ,
+								body: suggestedValue,
+								lat: lat,
+								lon: lon,
+								searchKey: searchKey
+								// searchQuery: searchKey
+							})
+							.then(function (docRef) {
+								console.log('Document written with ID: ', docRef.id);
+							})
+							.catch(function (error) {
+								console.error('Error adding document: ', error);
+							});
+					}
 					setshowSpinner(false);
 				}
 				if (places.data.status.toString() === 'ZERO_RESULTS') {
@@ -137,13 +158,11 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 		setshowHistorySpinner(true);
 
-		console.log('load history');
 		dataBase
 			.collection('searchhistory')
 			.get()
 			.then((item) => {
 				item.docs.forEach((doc, i) => {
-					console.log('ITEM: ', doc.data());
 					searchHis.push(doc.data());
 				});
 				setsearchHistory(searchHis);
@@ -154,6 +173,28 @@ const SearchScreen: React.FC<Props> = ({}) => {
 			});
 	};
 
+	const handleSearchSuggestion = async (event: MouseEvent<HTMLElement>) => {
+		const { index } = (event.target as HTMLElement).dataset;
+		let searchHis: any[] = [];
+
+		let nIndex: string = index as string;
+		let desc = predictedLoc[parseInt(nIndex)].description
+
+		setsuggestedValue(desc)
+		setpredictedLoc(searchHis)
+
+		let resp:any = await axios.get('https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json',
+			{params:{
+			address: desc,
+			key: 'AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY'
+			}
+			})
+		
+	
+		setLat(resp.data.results[0].geometry.location.lat)
+		setLon(resp.data.results[0].geometry.location.lng)
+	
+	}
 	const handleSearchItem = (event: MouseEvent<HTMLElement>) => {
 		const { index } = (event.target as HTMLElement).dataset;
 		let searchHis: any[] = [];
@@ -163,8 +204,11 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 		// axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=${searchTerm}&keyword=medical&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${lat},${lon}`)
 
+		setshowSpinner(true);
+		setsearchHistory([])
 
-		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${searchHistory[parseInt(nIndex)].radius}&type=hospitals&keyword=${searchHistory[parseInt(nIndex)].searchQuery}&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${lat},${lon}`)
+
+		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${searchHistory[parseInt(nIndex)].radius * 1000}&type=hospitals&keyword=${searchHistory[parseInt(nIndex)].searchKey}&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${searchHistory[parseInt(nIndex)].lat},${searchHistory[parseInt(nIndex)].lon}`)
 			.then((places) => {
 				if (places) {
 					setsearchResult(places.data.results);
@@ -179,7 +223,6 @@ const SearchScreen: React.FC<Props> = ({}) => {
 				if (places.data.error_message) {
 					seterrorMsg(places.data.error_message);
 				}
-				console.log('Suppose: ', places.data);
 			})
 			.catch((err) => {
 				console.log('ERR+ ', err);
@@ -189,7 +232,6 @@ const SearchScreen: React.FC<Props> = ({}) => {
 	};
 
 	const handleSearchKey = (event: MouseEvent<HTMLElement>) => {
-		console.log('Search Term: ', searchTerm);
 		// let query = event.target.value;
 		// console.log('>>>', query);
 
@@ -209,34 +251,17 @@ const SearchScreen: React.FC<Props> = ({}) => {
 			setfilteredResult(searchResult);
 		}
 
-		if (searchTerm) {
-			dataBase
-				.collection('searchhistory')
-				.add({
-					radius: radius,
-					body: searchTerm,
-					searchQuery: searchKey
-				})
-				.then(function(docRef) {
-					console.log('Document written with ID: ', docRef.id);
-				})
-				.catch(function(error) {
-					console.error('Error adding document: ', error);
-				});
-		}
+		
 	};
 
 	const handleSearchFilter2 = (event: ChangeEvent<HTMLInputElement>) => { 
 		let query = event.target.value;
-		console.log('The radius: ', radius)
-		console.log('The query: ', query)
-		console.log('The lat: ', lat)
-		console.log('The lon: ', lon)
+		setsuggestedValue(query)
+		
 
 		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${query}&location=${lat},${lon}&radius=${radius * 1000}&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location`)
 			.then(item => {
 				setpredictedLoc(item.data.predictions)
-			console.log('==Item: ', item.data)
 			}).catch(err => {
 			console.log('ERR: ', err)
 		})
@@ -248,23 +273,16 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 
 	};
-	const onTabChange = () => {
-		
-	}
-	const changeTab = () => {
-		console.log('Change active tab')
-		setactiveTab('1')
-	}
-	const switchView = () => {
-		setchangeTabs(!changeTabs)
-		console.log('Switch view')
-	}
-	const handleClickHistory = () => {
-		console.log('The elementary')
-	}
 
+
+	//ff0000
 	return (
-		<div className="container">
+		<div style={{ display: 'flex' }} className='parent'>
+			<div style={{ backgroundColor: '#40A9FF', height: 100, width: '100%' }} />
+
+			<div className="container">
+				<p style={{fontWeight:'bold', color:'white', fontSize:'18px'}}>Search for nearest Hospitals, Pharmacies, Clinics and Medical centers nearby...</p>
+
 			{errorMsg && errorMsg.length > 0 ? (
 				<Alert message="Error" description={errorMsg} type="error" showIcon closable />
 			) : null}
@@ -294,11 +312,12 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						size="large"
 						// suffix={suffix}
 						onChange={handleSearchFilter2}
-							className="searchbar"
+								className="searchbar"
+								
 						
-					// value={siValue}
+					value={suggestedValue}
 						/>
-							<HistoryOutlined className='searchIconx' onClick={handleClickHistory}/>
+							<HistoryOutlined className='searchIconx' onClick={loadHistory}/>
 						</div>
 						
 						{
@@ -311,7 +330,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 										predictedLoc.map((item: any, index: number) => {
 											return (
 												<>
-													<p onClick={handleSearchItem} data-index={index} className="searchList">
+													<p onClick={handleSearchSuggestion} data-index={index} className="searchList">
 														{item.description}
 													</p>
 												</>
@@ -344,7 +363,6 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 					</div>
 					
-					<div className="spinner">{showSpinner ? <Spin indicator={antIcon} /> : null}</div>
 
 					
 					
@@ -353,46 +371,27 @@ const SearchScreen: React.FC<Props> = ({}) => {
 				<Button type="primary" className="action_button" disabled={disableButton} onClick={handleSearch}>
 					Search
 					</Button>
+				<div className="spinner">{showSpinner ? <Spin indicator={antIcon} /> : null}</div>
+
 				
 				{showLoadingError ? <p>Error, please select radius to search</p> : null}
 
-				<Button
+				{/* <Button
 					type="primary"
 					icon={showHistorySpinner ? <LoadingOutlined /> : <HistoryOutlined />}
 					onClick={loadHistory}>
 					Load search history
-				</Button>
+				</Button> */}
 
-				{
-					changeTabs ? (<p>Hellow Search</p>) : (
-					<div>
 			
-
-					</div>)
-				}
-				
 			
-				<button onClick={switchView}>Switch View</button>
-
 				
 			</div>
 			
 			
 			{filteredResult && filteredResult.length > 0 ? (
 				<div>
-					<div className='search-and-button'>
-					<Input
-						placeholder="Filter for hospitals, Pharmacies, Clinic and Medical Offices.."
-						size="large"
-						// suffix={suffix}
-						onChange={handleSearchFilter}
-						className="searchbar"
-						// value={siValue}
-					/>
-
-					<button onClick={handleSearchKey}
-						style={{ width: '150px', marginTop: '20px' }}>Search</button>
-					</div>
+					
 					<p className='search-title'>Search results: </p>
 
 					<List
@@ -425,7 +424,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 				) : null} 
 			
-			
+			</div>
 		</div>
 	);
 };
