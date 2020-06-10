@@ -132,8 +132,8 @@
     padding-left: 50px;
 }
 .searchIconx{
-    position: absolute;
-    margin-top: 2px;
+    /* position: absolute; */
+    margin-top: 5px;
     margin-left: 10px;
     font-size: 20px;
 

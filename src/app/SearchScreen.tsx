@@ -312,14 +312,10 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						size="large"
 						// suffix={suffix}
 						onChange={handleSearchFilter2}
-								className="searchbar"
-								
-						
-					value={suggestedValue}
+									className="searchbar"
+									value={suggestedValue}
 								/>
-								<div className='searchIconx'>
-									<HistoryOutlined  onClick={loadHistory} />
-								</div>
+									<HistoryOutlined onClick={loadHistory} className='searchIconx'/>
 						</div>
 						
 						{
