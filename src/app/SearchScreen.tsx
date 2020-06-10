@@ -208,7 +208,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 		setsearchHistory([])
 
 
-		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${searchHistory[parseInt(nIndex)].radius * 1000}&type=hospitals&keyword=${searchHistory[parseInt(nIndex)].searchKey}&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${searchHistory[parseInt(nIndex)].lat},${searchHistory[parseInt(nIndex)].lon}`)
+		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${searchHistory[parseInt(nIndex)].radius}&type=hospitals&keyword=${searchHistory[parseInt(nIndex)].searchKey}&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${searchHistory[parseInt(nIndex)].lat},${searchHistory[parseInt(nIndex)].lon}`)
 			.then((places) => {
 				if (places) {
 					setsearchResult(places.data.results);
