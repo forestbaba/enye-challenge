@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, MouseEvent, useRef } from 'react';
-import { Select, Input, List, Avatar, Button, Spin, Alert } from 'antd';
+import { Select, Input, List, Avatar, Button, Spin, Alert, Tabs } from 'antd';
 import { HistoryOutlined, LoadingOutlined } from '@ant-design/icons';
 import './styles.css';
 import { HistorySVG } from './styledsvg';
@@ -7,8 +7,9 @@ import 'antd/dist/antd.css';
 import axios from 'axios';
 import { dataBase } from './util/FirebaseInit';
 
-const { Search } = Input;
 
+const { Search } = Input;
+const { TabPane} = Tabs;
 const { Option } = Select;
 
 interface Props {
@@ -21,6 +22,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 	const [ searchResult, setsearchResult ] = useState<any[]>([]);
 	const [ searchHistory, setsearchHistory ] = useState<any[]>([]);
 	const [ filteredResult, setfilteredResult ] = useState<any[]>([]);
+	const [ predictedLoc, setpredictedLoc ] = useState<any[]>([]);
 	const [ localSearch ] = useState<any[]>([]);
 	const [ disableButton ] = useState<boolean>(false);
 	const [ showSpinner, setshowSpinner ] = useState<boolean>(false);
@@ -33,6 +35,8 @@ const SearchScreen: React.FC<Props> = ({}) => {
 	const [ radius, setRadius ] = useState<number>(20);
 	const [ siValue, setsiValue ] = useState<string>('');
 	const [ searchTerm, setsearchTerm ] = useState<string>('');
+	const [ activeTab, setactiveTab ] = useState<string>('1');
+	const [ changeTabs, setchangeTabs ] = useState<boolean>(true);
 
 	const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
@@ -58,6 +62,28 @@ const SearchScreen: React.FC<Props> = ({}) => {
 		},
 		[ searchResult, errorMsg ]
 	);
+	useEffect(() => {
+		let searchHis: any[] = [];
+
+		setshowHistorySpinner(true);
+
+		console.log('load history');
+		dataBase
+			.collection('searchhistory')
+			.get()
+			.then((item) => {
+				item.docs.forEach((doc, i) => {
+					console.log('ITEM: ', doc.data());
+					searchHis.push(doc.data());
+				});
+				setsearchHistory(searchHis);
+				setshowHistorySpinner(false);
+			})
+			.catch((err) => {
+				console.log('ERR: ', err);
+			});
+
+	},[])
 
 	// console.log('search result:', searchResult);
 
@@ -200,6 +226,21 @@ const SearchScreen: React.FC<Props> = ({}) => {
 		}
 	};
 
+	const handleSearchFilter2 = (event: ChangeEvent<HTMLInputElement>) => { 
+		let query = event.target.value;
+		console.log('The radius: ', radius)
+		console.log('The query: ', query)
+		console.log('The lat: ', lat)
+		console.log('The lon: ', lon)
+
+		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${query}&location=${lat},${lon}&radius=${radius * 1000}&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location`)
+			.then(item => {
+				setpredictedLoc(item.data.predictions)
+			console.log('==Item: ', item.data)
+			}).catch(err => {
+			console.log('ERR: ', err)
+		})
+	}
 	const handleSearchFilter = (event: ChangeEvent<HTMLInputElement>) => {
 		//   const value = e.target.value;
 		let query = event.target.value;
@@ -207,6 +248,20 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 
 	};
+	const onTabChange = () => {
+		
+	}
+	const changeTab = () => {
+		console.log('Change active tab')
+		setactiveTab('1')
+	}
+	const switchView = () => {
+		setchangeTabs(!changeTabs)
+		console.log('Switch view')
+	}
+	const handleClickHistory = () => {
+		console.log('The elementary')
+	}
 
 	return (
 		<div className="container">
@@ -226,19 +281,79 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						<Option value="100">100 km</Option>
 					</Select>
 
-					{/* <h5>Select your target body: </h5> */}
 					<Select defaultValue="Select Search Body" style={{ width: 200 }} onChange={handleSearchBodyChange}>
 						<Option value="hospitals">Hospitals</Option>
 						<Option value="pharmacy">Pharmacies</Option>
 						<Option value="clinics">Clinics</Option>
 						<Option value="medical offices">Medical Offices</Option>
 					</Select>
-					<Button type="primary" className="action_button" disabled={disableButton} onClick={handleSearch}>
-						Search
-					</Button>
+					<div className='contain'>
+					<div className="searchAndIcon">
+					<Input
+						placeholder="Filter for hospitals, Pharmacies, Clinic and Medical Offices.."
+						size="large"
+						// suffix={suffix}
+						onChange={handleSearchFilter2}
+							className="searchbar"
+						
+					// value={siValue}
+						/>
+							<HistoryOutlined className='searchIconx' onClick={handleClickHistory}/>
+						</div>
+						
+						{
+							predictedLoc && predictedLoc.length > 0 ?
+								<div className='scard2'>
+
+									{predictedLoc && predictedLoc.length > 0 ? <p className='stitle'>Suggested Locations: </p> : null}
+
+									{predictedLoc && predictedLoc.length > 0 ? (
+										predictedLoc.map((item: any, index: number) => {
+											return (
+												<>
+													<p onClick={handleSearchItem} data-index={index} className="searchList">
+														{item.description}
+													</p>
+												</>
+											);
+										})
+									) : null}
+								</div> : null
+
+						}
+						{
+							searchHistory && searchHistory.length > 0 ?
+								<div className='scard'>
+
+									{searchHistory && searchHistory.length > 0 ? <p className='stitle'>Search History: </p> : null}
+
+									{searchHistory && searchHistory.length > 0 ? (
+										searchHistory.map((item: any, index: number) => {
+											return (
+												<>
+													<p onClick={handleSearchItem} data-index={index} className="searchList">
+														{item.body}
+													</p>
+												</>
+											);
+										})
+									) : null}
+								</div> : null
+
+						}
+
+					</div>
+					
 					<div className="spinner">{showSpinner ? <Spin indicator={antIcon} /> : null}</div>
 
+					
+					
 				</div>
+				
+				<Button type="primary" className="action_button" disabled={disableButton} onClick={handleSearch}>
+					Search
+					</Button>
+				
 				{showLoadingError ? <p>Error, please select radius to search</p> : null}
 
 				<Button
@@ -247,27 +362,20 @@ const SearchScreen: React.FC<Props> = ({}) => {
 					onClick={loadHistory}>
 					Load search history
 				</Button>
+
+				{
+					changeTabs ? (<p>Hellow Search</p>) : (
+					<div>
+			
+
+					</div>)
+				}
+				
+			
+				<button onClick={switchView}>Switch View</button>
+
+				
 			</div>
-			{
-				searchHistory && searchHistory.length > 0 ?
-					<div className='scard'>
-
-						{searchHistory && searchHistory.length > 0 ? <p className='stitle'>Search History: </p> : null}
-
-						{searchHistory && searchHistory.length > 0 ? (
-							searchHistory.map((item: any, index: number) => {
-								return (
-									<>
-										<p onClick={handleSearchItem} data-index={index} className="searchList">
-											{item.body}
-										</p>
-									</>
-								);
-							})
-						) : null}
-					</div> : null
-
-			}
 			
 			
 			{filteredResult && filteredResult.length > 0 ? (
