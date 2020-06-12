@@ -12,7 +12,7 @@
     /* align-items: center; */
     flex-direction: column;
     /* background-color: red; */
-    left: 20%;
+    left: 10%;
     top: -5%;
     right: 30%;
     width: 80%;
@@ -22,11 +22,27 @@
 }
 
 .searchbar {
-    top: 30%;
-    /* margin-top: 10%; */
+    top: 50%;
     height: 33px;
 }
 
+.searchbar-container{
+    width: 45%;
+    /* background-color: red; */
+}
+.search-container-2 input{
+    height: 33px;
+    width: 100%;
+    padding-right: 15px;
+}
+.searchbar-container .search-container-2 {
+    display: flex;
+    flex-direction: row;
+    border-width: 2px;
+}
+.search-container-2 .search-icon:hover{
+    cursor: pointer;
+}
 .action_button {
     width: 200px;
     margin-bottom: 20px;
@@ -89,10 +105,10 @@
     margin-top: 10px;
     margin-bottom: 10px;
     width: 30%;
-    left: 32.5%;
+    /* left: 32.5%; */
     z-index: 100;
     background-color: white;
-    margin-top: 40px;
+    /* margin-top: 40px; */
 }
 .scard2 {
     position: absolute;
@@ -104,11 +120,12 @@
     box-shadow: 5px 5px 5px 5px #d9d9db;
     margin-top: 10px;
     margin-bottom: 10px;
-    width: 30%;
-    left: 32.5%;
+    width: 41%;
+    /* left: 32.5%; */
     z-index: 1000;
     background-color: white;
-    margin-top: 40px;
+    margin-top: 0px;
+    /* height: 100px; */
 }
 
 .scard .stitle {
@@ -131,11 +148,28 @@
 
     padding-left: 50px;
 }
+
+.radius_option .history_and_title {
+    display: flex;
+    flex-direction: row;
+
+}
+.history_and_title p{
+    color: white;
+    padding-top: 2px;
+}
+
+.radius_option .history_parent{
+    padding-left: 20px;
+    width: 30%;
+}
+
 .searchIconx{
     /* position: absolute; */
     margin-top: 5px;
     margin-left: 10px;
     font-size: 20px;
+    color: white;
 
     /* top: 10px; */
 }

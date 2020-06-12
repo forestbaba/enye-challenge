@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, MouseEvent, useRef } from 'react';
 import { Select, Input, List, Avatar, Button, Spin, Alert, Tabs } from 'antd';
-import { HistoryOutlined, LoadingOutlined } from '@ant-design/icons';
+import { HistoryOutlined, LoadingOutlined,SearchOutlined } from '@ant-design/icons';
 import './styles.css';
 import { HistorySVG } from './styledsvg';
 import 'antd/dist/antd.css';
@@ -26,6 +26,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 	const [ localSearch ] = useState<any[]>([]);
 	const [ disableButton ] = useState<boolean>(false);
 	const [ showSpinner, setshowSpinner ] = useState<boolean>(false);
+	const [ showHistoryLoading, setshowHistoryLoading ] = useState<boolean>(false);
 	const [ showHistorySpinner, setshowHistorySpinner ] = useState<boolean>(false);
 	const [ showLoadingError ] = useState<boolean>(false);
 	const [ lat, setLat ] = useState<number>(0);
@@ -39,7 +40,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 	const [ activeTab, setactiveTab ] = useState<string>('1');
 	const [ changeTabs, setchangeTabs ] = useState<boolean>(true);
 
-	const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+	// const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 	useEffect(
 		() => {
@@ -107,7 +108,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 		setshowSpinner(true);
 		let searchHis: any[] = [];
-		
+		setpredictedLoc(searchHis)
 
 		// axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${radius}&type=hospitals&keyword=${searchKey}&key=AIzaSyD6MK_F1geodPtX4UDpWnD6DsvuX9pipTc&location=${lat},${lon}`)
 
@@ -115,6 +116,9 @@ const SearchScreen: React.FC<Props> = ({}) => {
 	
 			.then((places) => {
 				if (places) {
+					if (places && places.data.length > 0) {
+						seterrorMsg('')
+					}
 					setsearchResult(places.data.results);
 					setsearchHistory(searchHis)
 
@@ -154,6 +158,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 	};
 
 	const loadHistory = () => {
+		setshowHistoryLoading(true)
 		let searchHis: any[] = [];
 
 		setshowHistorySpinner(true);
@@ -167,8 +172,12 @@ const SearchScreen: React.FC<Props> = ({}) => {
 				});
 				setsearchHistory(searchHis);
 				setshowHistorySpinner(false);
+				setshowHistoryLoading(false)
+
 			})
 			.catch((err) => {
+				setshowHistoryLoading(false)
+
 				console.log('ERR: ', err);
 			});
 	};
@@ -211,6 +220,9 @@ const SearchScreen: React.FC<Props> = ({}) => {
 		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?radius=${searchHistory[parseInt(nIndex)].radius}&type=hospitals&keyword=${searchHistory[parseInt(nIndex)].searchKey}&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location=${searchHistory[parseInt(nIndex)].lat},${searchHistory[parseInt(nIndex)].lon}`)
 			.then((places) => {
 				if (places) {
+					if (places.data.length > 0) {
+						seterrorMsg('')
+					}
 					setsearchResult(places.data.results);
 					setsearchHistory(searchHis)
 					searchHistory.reverse()
@@ -261,6 +273,10 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 		axios.post(`https://enye-cors.herokuapp.com/https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${query}&location=${lat},${lon}&radius=${radius * 1000}&key=AIzaSyDvuTxJbVly2LHuwfA475wCv9bT91z5-WY&location`)
 			.then(item => {
+				if (item.data.length > 0) {
+						seterrorMsg('')
+				
+				}
 				setpredictedLoc(item.data.predictions)
 			}).catch(err => {
 			console.log('ERR: ', err)
@@ -277,20 +293,22 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 	//ff0000
 	return (
-		<div style={{ display: 'flex' }} className='parent'>
-			<div style={{ backgroundColor: '#40A9FF', height: 100, width: '100%' }} />
+		<div className='parent'>
 
-			<div className="container">
-				<p style={{fontWeight:'bold', color:'white', fontSize:'18px'}}>Search for nearest Hospitals, Pharmacies, Clinics and Medical centers nearby...</p>
+			
+			<div style={{ backgroundColor: '#063861', height: 200, width: '100%' }} />
 
 			{errorMsg && errorMsg.length > 0 ? (
 				<Alert message="Error" description={errorMsg} type="error" showIcon closable />
 			) : null}
 
-			<div>
-				{/* <h5>Please Select search Radius and search button to search for hospitals near you </h5> */}
+			<div className='container'>
+			<p style={{ fontWeight: 'bold', color: 'white', fontSize: '18px' }}>Search for nearest Hospitals, Pharmacies, Clinics and Medical centers nearby...</p>
 				<div className="radius_option">
-					<Select defaultValue="5 km" style={{ width: 200 }} onChange={handleChange}>
+						<Select defaultValue="5 km"
+							
+							style={{ width: 200 }}
+							onChange={handleChange}>
 						<Option value="5">5 km</Option>
 						<Option value="10">10 km</Option>
 						<Option value="20">20 km</Option>
@@ -304,9 +322,11 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						<Option value="pharmacy">Pharmacies</Option>
 						<Option value="clinics">Clinics</Option>
 						<Option value="medical offices">Medical Offices</Option>
-					</Select>
-					<div className='contain'>
-					<div className="searchAndIcon">
+						</Select>
+						
+				{/* <div className="searchAndIcon"> */}
+				<div className="searchbar-container">
+					<div className='search-container-2'>
 					<Input
 						placeholder="Filter for hospitals, Pharmacies, Clinic and Medical Offices.."
 						size="large"
@@ -314,81 +334,78 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						onChange={handleSearchFilter2}
 									className="searchbar"
 									value={suggestedValue}
-								/>
-									<HistoryOutlined onClick={loadHistory} className='searchIconx'/>
-						</div>
-						
-						{
-							predictedLoc && predictedLoc.length > 0 ?
-								<div className='scard2'>
-
-									{predictedLoc && predictedLoc.length > 0 ? <p className='stitle'>Suggested Locations: </p> : null}
-
-									{predictedLoc && predictedLoc.length > 0 ? (
-										predictedLoc.map((item: any, index: number) => {
-											return (
-												<>
-													<p onClick={handleSearchSuggestion} data-index={index} className="searchList">
-														{item.description}
-													</p>
-												</>
-											);
-										})
-									) : null}
-								</div> : null
-
-						}
-						{
-							searchHistory && searchHistory.length > 0 ?
-								<div className='scard'>
-
-									{searchHistory && searchHistory.length > 0 ? <p className='stitle'>Search History: </p> : null}
-
-									{searchHistory && searchHistory.length > 0 ? (
-										searchHistory.map((item: any, index: number) => {
-											return (
-												<>
-													<p onClick={handleSearchItem} data-index={index} className="searchList">
-														{item.body}
-													</p>
-												</>
-											);
-										})
-									) : null}
-								</div> : null
-
-						}
-
+					/>
+						<SearchOutlined
+							disabled={disableButton}
+							onClick={handleSearch}
+							className='search-icon'
+						style={{fontSize: '25px', padding: '10px', paddingTop:'7px',position:'absolute',marginLeft:'37%'}} />
 					</div>
-					
+					{
+						predictedLoc && predictedLoc.length > 0 ?
+							<div className='scard2'>
 
-					
-					
+								{predictedLoc && predictedLoc.length > 0 ? <p className='stitle'>Suggested Locations: </p> : null}
+
+								{predictedLoc && predictedLoc.length > 0 ? (
+									predictedLoc.map((item: any, index: number) => {
+										return (
+											<>
+												<p onClick={handleSearchSuggestion} data-index={index} className="searchList">
+													{item.description}
+												</p>
+											</>
+										);
+									})
+								) : null}
+							</div> : null
+
+					}
+
+					</div>				
+								
+					<div className='history_parent'>	
+						<div className='history_and_title'>
+							<HistoryOutlined onClick={loadHistory} className='searchIconx' style={{ color: "#ffffff"}} />
+							<p>Search history</p>
+							{showHistoryLoading ? <LoadingOutlined style={{ fontSize: 24, color:'#ffffff', marginLeft:'10px'}} spin /> : null}
+						</div>
+					{
+						searchHistory && searchHistory.length > 0 ?
+							<div className='scard'>
+
+								{searchHistory && searchHistory.length > 0 ? <p className='stitle'>Search History: </p> : null}
+
+								{searchHistory && searchHistory.length > 0 ? (
+									searchHistory.map((item: any, index: number) => {
+										return (
+											<>
+												<p onClick={handleSearchItem} data-index={index} className="searchList">
+													{item.body}
+												</p>
+											</>
+										);
+									})
+								) : null}
+							</div> : null
+
+					}
 				</div>
-				
-				<Button type="primary" className="action_button" disabled={disableButton} onClick={handleSearch}>
-					Search
-					</Button>
-				<div className="spinner">{showSpinner ? <Spin indicator={antIcon} /> : null}</div>
+			</div>
+					
+								
+					
+					
+			<div className="spinner">{showSpinner ? <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /> : null}</div>
 
 				
 				{showLoadingError ? <p>Error, please select radius to search</p> : null}
 
-				{/* <Button
-					type="primary"
-					icon={showHistorySpinner ? <LoadingOutlined /> : <HistoryOutlined />}
-					onClick={loadHistory}>
-					Load search history
-				</Button> */}
-
-			
-			
 				
-			</div>
 			
 			
 			{filteredResult && filteredResult.length > 0 ? (
-				<div>
+				<div style={{marginTop:'65px', marginBottom:'25px'}}>
 					
 					<p className='search-title'>Search results: </p>
 
@@ -396,7 +413,12 @@ const SearchScreen: React.FC<Props> = ({}) => {
 						itemLayout="horizontal"
 						dataSource={filteredResult}
 						renderItem={(item) => (
-							<List.Item>
+							<List.Item
+									style={{
+										borderRadius: '10px',
+									boxShadow: ' 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
+										padding: '20px',
+										marginTop: '20px'}}>
 								<List.Item.Meta
 									avatar={<Avatar src={item.icon} />}
 									title={item.name}
