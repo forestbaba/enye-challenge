@@ -1,0 +1,201 @@
+.popup1 {
+
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+
+    .button-text {
+        color: white;
+
+    }
+
+    .popup_inner {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        position: absolute;
+        left: 35%;
+        right: 35%;
+        top: 15%;
+        margin: auto;
+        // padding:30px;
+        background: white;
+
+        .close-x {
+            align-self: 'flex-end';
+            margin-top: 30px;
+            position: absolute;
+            right: 10%
+        }
+
+        .close-x:hover {
+            cursor: pointer;
+        }
+
+        .note-container {
+            padding: 25px
+        }
+
+        .text_input {
+            margin: 5px 15%;
+            padding: 15px;
+            background: #f5f5f5;
+            border-width: 0px;
+            color: #d1d1d1
+        }
+
+
+        button {
+            margin: 10px 35%;
+            padding: 5px;
+            background:#063861;
+            color: white;
+            border-width: 0px;
+
+
+        }
+
+
+
+
+        .button-and-spinner-holder {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+
+            .spinner-holder {
+
+                z-index: 1;
+            }
+        }
+
+    }
+
+
+}
+
+.popup_inner_signup {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    position: absolute;
+    left: 30%;
+    right: 30%;
+    top: 10%;
+    margin: auto;
+    // padding:30px;
+    background: white;
+    background-color: red($color: #000000);
+
+    .close-x {
+        align-self: 'flex-end';
+        margin-top: 30px;
+        position: absolute;
+        right: 5%
+    }
+
+    .close-x:hover {
+        cursor: pointer;
+    }
+
+    .contain {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+
+        h5{
+            font-size: 18px;
+        }
+
+    }
+
+    .note-container {
+        padding: 25px;
+        font-size: 17px;
+    }
+
+    .text_input {
+        flex: 1;
+        margin: 5px 15px;
+        padding: 15px;
+        background: #f5f5f5;
+        border-width: 0px;
+        color: #d1d1d1
+    }
+
+    button {
+        margin: 10px 35%;
+        padding: 5px;
+        background:#063861;
+        color: white !important;
+        font-size: 18px;
+        border-width: 0px;
+        border-radius: 2px;
+
+        h6 {
+            color: white;
+
+        }
+
+        :hover {
+            cursor: pointer;
+        }
+
+    }
+
+
+
+    //  .login-footer {
+    //     //  background: #f5f5f5;
+    //      width: 100%;
+    //      padding: 15px;
+    //      margin-top: 5%;
+
+    //      .new {
+    //          font-size: 14px;
+    //      }
+
+         
+
+    //  }
+
+    .login-footer {
+        // background: #f5f5f5;
+        width: 100%;
+        padding: 15px;
+        margin-top: 5%;
+
+        .new {
+            font-size: 14px;
+        }
+
+        .sign-up-text {
+            color:#063861;
+            font-size: 15px;
+            cursor: pointer;
+
+            a{
+                 color:#063861;
+            }
+        }
+    }
+
+    .button-and-spinner-holder {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+
+        .spinner-holder {
+
+            z-index: 1;
+        }
+    }
+
+}

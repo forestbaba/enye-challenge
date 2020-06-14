@@ -6,6 +6,8 @@ import { HistorySVG } from './styledsvg';
 import 'antd/dist/antd.css';
 import axios from 'axios';
 import { dataBase } from './util/FirebaseInit';
+import { useQuery } from '@apollo/react-hooks'
+import gql from 'graphql-tag';
 
 
 const { Search } = Input;
@@ -17,6 +19,7 @@ interface Props {
 	searchIndex: Number;
 
 }
+
 
 const SearchScreen: React.FC<Props> = ({}) => {
 	const [ searchResult, setsearchResult ] = useState<any[]>([]);
@@ -38,10 +41,15 @@ const SearchScreen: React.FC<Props> = ({}) => {
 	const [ siValue, setsiValue ] = useState<string>('');
 	const [ searchTerm, setsearchTerm ] = useState<string>('');
 	const [ activeTab, setactiveTab ] = useState<string>('1');
-	const [ changeTabs, setchangeTabs ] = useState<boolean>(true);
+	const [changeTabs, setchangeTabs] = useState<boolean>(true);
 
 	// const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
+	const { loading, data } = useQuery(FETCH_SEARCH_HISTORY)
+
+	if (data) {
+		console.log(data.getSearchHistory)
+	}
 	useEffect(
 		() => {
 			// setsuggestedValue('call me')
@@ -448,4 +456,13 @@ const SearchScreen: React.FC<Props> = ({}) => {
 		</div>
 	);
 };
+
+
+const FETCH_SEARCH_HISTORY = gql`
+	{	
+		getSearchHistory{
+		radius lat lon searchKey
+	}
+}
+`
 export default SearchScreen;

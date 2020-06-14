@@ -1,0 +1,14 @@
+const actionTypes = {
+
+	LOG_IN: 'LOG_IN',
+	LOG_IN_SUCCESS: 'LOG_IN_SUCCESS',
+	LOG_IN_FAILURE: 'LOG_IN_FAILURE',
+
+	IS_LOGGIN: 'IS_LOGGIN',
+	IS_LOGIN_SUCCESS: 'IS_LOGIN_SUCCESS',
+	IS_LOGGIN_FAILURE: 'IS_LOGGIN_FAILURE',
+
+	
+};
+
+export default actionTypes;
