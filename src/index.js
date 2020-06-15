@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import ApolloProvider from './app/util/ApolloProvider'
+import { Provider } from 'react-redux';
+
 
 ReactDOM.render(ApolloProvider,  document.getElementById('root')
 );

@@ -1,13 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Loader from 'react-loader-spinner';
 import './styles.scss';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import {useDispatch, useSelector} from 'react-redux'
+import { login } from '../redux/User/action';
 
 const Login = () => {
 
     const [showSpinner, setShowSpinner] = useState('')
-    const [loginDetails, setLoginDetails] = useState('')
+    const [loginDetails, setLoginDetails] = useState('');
+    const data = useSelector((state) => state);
 
+    const history = useHistory();
+
+    const { userData: { loggedInUser, isAuthenticated } } = data
+
+    const realdispatch = useDispatch()
+
+    useEffect(() => {
+        if (isAuthenticated) {
+          history.push('/home')
+      }
+    }, [isAuthenticated === false])
 
     const ValidateEmail = (mail) => {
         if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(loginDetails.email)) {
@@ -27,6 +41,7 @@ const Login = () => {
         } else {
             console.log('>>>>', loginDetails)
             setShowSpinner(true)
+            realdispatch(login(loginDetails))
 
         }
         

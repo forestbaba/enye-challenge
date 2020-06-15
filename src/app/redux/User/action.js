@@ -6,7 +6,11 @@ const {
 	LOG_IN_SUCCESS,
 	IS_LOGGIN,
 	IS_LOGGIN_FAILURE,
-	IS_LOGIN_SUCCESS
+	IS_LOGIN_SUCCESS,
+
+	IS_LOGOUT,
+	IS_LOGOUT_SUCCESS,
+	IS_LOGOUT_FAILURE,
 
 } = actionTypes;
 
@@ -18,12 +22,12 @@ export const isLogin = payload => ({
 
 export const isLoginSuccess = payload => ({
 	payload,
-	type: LOG_IN_SUCCESS,
+	type: IS_LOGIN_SUCCESS,
 });
 
 export const isLoginFailure = payload => ({
 	payload,
-	type: LOG_IN_FAILURE,
+	type: IS_LOGGIN_FAILURE,
 });
 
 export const login = payload => ({
@@ -38,4 +42,17 @@ export const loginSuccess = payload => ({
 export const loginFailure = payload => ({
 	payload,
 	type: LOG_IN_FAILURE,
+});
+export const logOut = () => ({
+	type: IS_LOGOUT,
+});
+
+export const logOutSuccess = payload => ({
+	payload,
+	type: IS_LOGOUT_SUCCESS,
+});
+
+export const logOutFailure = payload => ({
+	payload,
+	type: IS_LOGOUT_FAILURE
 });

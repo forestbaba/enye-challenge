@@ -48,7 +48,7 @@ const SearchScreen: React.FC<Props> = ({}) => {
 	const { loading, data } = useQuery(FETCH_SEARCH_HISTORY)
 
 	if (data) {
-		console.log(data.getSearchHistory)
+		console.log(data.get)
 	}
 	useEffect(
 		() => {
