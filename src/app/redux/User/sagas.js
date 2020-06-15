@@ -7,13 +7,14 @@ import axios from "axios";
 
 const {
   isLogin,
-  login, isLoginSuccess, isLoginFailure, logOutSuccess,logOutFailure
+  login, isLoginSuccess, isLoginFailure, logOutSuccess,logOutFailure, signpSuccess,signupFailure
 } = actions;
 
 const {
   IS_LOGGIN,
   LOG_IN,
-  IS_LOGOUT
+  IS_LOGOUT,
+  SIGN_UP
 } = actionTypes;
 
 
@@ -66,6 +67,44 @@ function* userLogin({ payload }) {
     yield put(actions.loginFailure(error));
   }
 }
+function* userSignup({ payload }) {
+  console.log('==',payload)
+  const loggIn = channel();
+  try {
+    if (payload) {
+
+
+      authentication.createUserWithEmailAndPassword(payload.email, payload.password)
+        .then(user => {
+
+          // user.user.uid
+          dataBase.collection("users").doc(user.user.uid).set({
+            email: payload.email,
+            uid: user.user.uid
+          }).then(newU => {
+            loggIn.put(actions.signpSuccess(newU))
+            console.log('Done')
+          }).catch(err => {
+            alert('Error creating user, Please try again later')
+            //console.log('ERRX: ', err)
+          })
+        })
+
+
+
+
+
+     
+      while (true) {
+        const action = yield take(loggIn);
+        yield put(action);
+      }
+    }
+
+  } catch (error) {
+    yield put(actions.signupFailure(error));
+  }
+}
 function* userLogout() {
   const loggOut = channel();
   try {
@@ -88,5 +127,6 @@ export default function* userPropSaga() {
   yield takeEvery(IS_LOGGIN, checkLogin);
   yield takeEvery(LOG_IN, userLogin);
   yield takeEvery(IS_LOGOUT, userLogout);
+  yield takeEvery(SIGN_UP, userSignup);
 
 }

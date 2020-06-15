@@ -11,6 +11,9 @@ const {
 	IS_LOGOUT,
 	IS_LOGOUT_SUCCESS,
 	IS_LOGOUT_FAILURE,
+	SIGN_UP,
+	SIGN_UP_FAILURE,
+	SIGN_UP_SUCCESS
 
 } = actionTypes;
 
@@ -55,4 +58,18 @@ export const logOutSuccess = payload => ({
 export const logOutFailure = payload => ({
 	payload,
 	type: IS_LOGOUT_FAILURE
+});
+export const signup = payload => ({
+	payload,
+	type: SIGN_UP,
+});
+
+export const signpSuccess = payload => ({
+	payload,
+	type: SIGN_UP_SUCCESS,
+});
+
+export const signupFailure = payload => ({
+	payload,
+	type: SIGN_UP_FAILURE
 });

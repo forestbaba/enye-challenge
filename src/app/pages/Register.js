@@ -1,16 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import './styles.scss'
 import Loader from 'react-loader-spinner';
 import { Link } from 'react-router-dom'
 import { dataBase, authentication } from '../util/FirebaseInit';
 import { useHistory } from 'react-router';
+import { useDispatch,useSelector } from 'react-redux'
+import {signup} from '../redux/User/action'
 
 
 const Register = () => {
 
     const history = useHistory();
+    const realdispatch = useDispatch()
     const [showSpinner, setShowSpinner] = useState('')
     const [loginDetails, setLoginDetails] = useState('')
+
+    const data = useSelector((state) => state);
+
+    const { userData: { loggedInUser, isAuthenticated, successSignup } } = data
+
+    useEffect(() => {
+        if (successSignup) {
+            history.push('/')
+        }
+    }, [successSignup === true])
 
     const ValidateEmail = (mail) => {
         if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(loginDetails.email)) {
@@ -33,22 +46,22 @@ const Register = () => {
             alert('Password and confirm password field do not match')
         } else {
             setShowSpinner(true)
-            authentication.createUserWithEmailAndPassword(loginDetails.email, loginDetails.password)
-                .then(user => {
+            realdispatch(signup(loginDetails))
+            // authentication.createUserWithEmailAndPassword(loginDetails.email, loginDetails.password)
+            //     .then(user => {
 
-                    // user.user.uid
-                        dataBase.collection("users").doc(user.user.uid).set({
-                        email: loginDetails.email,
-                        uid: user.user.uid
-                        }).then(newU => {
-                            history.push('/');
-
-                        console.log('Done')
-                    }).catch(err => {
-                        alert('Error creating user, Please try again later')
-                        //console.log('ERRX: ', err)
-                    })
-                })
+            //         // user.user.uid
+            //             dataBase.collection("users").doc(user.user.uid).set({
+            //             email: loginDetails.email,
+            //             uid: user.user.uid
+            //             }).then(newU => {
+            //                 history.push('/');
+            //             console.log('Done')
+            //         }).catch(err => {
+            //             alert('Error creating user, Please try again later')
+            //             //console.log('ERRX: ', err)
+            //         })
+            //     })
         }
     }
 

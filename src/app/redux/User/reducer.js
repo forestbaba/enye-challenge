@@ -10,14 +10,19 @@ const {
 
   IS_LOGOUT,
   IS_LOGOUT_FAILURE,
-   IS_LOGOUT_SUCCESS
+   IS_LOGOUT_SUCCESS,
+
+  SIGN_UP,
+  SIGN_UP_SUCCESS,
+  SIGN_UP_FAILURE,
 } = actionTypes;
 
 const initialState = {
   loading: "false",
   user: {},
   error: {},
-  isAuthenticated : false
+  isAuthenticated: false,
+  successSignup:false
  
 };
 
@@ -72,6 +77,24 @@ export default (state = initialState, { payload, type }) => {
         ...state,
         loading: false,
        isAuthenticated: false
+      };
+    
+    
+    case SIGN_UP:
+      return { ...state, loadingAddress: true };
+
+    case SIGN_UP_SUCCESS:
+      return {
+        ...state,
+        successSignup: true,
+        loadingAddress: false,
+      };
+
+    case SIGN_UP_FAILURE:
+      return {
+        ...state,
+        successSignup: false,
+        loading: false
       };
     
     
