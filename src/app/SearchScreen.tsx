@@ -4,11 +4,12 @@ import { HistoryOutlined, LoadingOutlined,SearchOutlined } from '@ant-design/ico
 import './styles.css';
 import { HistorySVG } from './styledsvg';
 import 'antd/dist/antd.css';
+import { useSelector } from 'react-redux';
+
 import axios from 'axios';
 import { dataBase } from './util/FirebaseInit';
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag';
-
 
 const { Search } = Input;
 const { Option } = Select;
@@ -45,16 +46,21 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 	// const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
+	const [currentUser, setCurrentUser] = useState(false)
+	const [user, setUser] = useState(null)
+	const userdatax = useSelector((state: any) => state);
+	// const { userData } = userdatax
+
+	const { userData: { loggedInUser, isAuthenticated } } = userdatax
+	
 	const { loading, data } = useQuery(FETCH_SEARCH_HISTORY)
 
-	if (data) {
-		console.log(data.get)
-	}
+
 	useEffect(
 		() => {
-			// setsuggestedValue('call me')
-			setfilteredResult(searchResult);
+			console.log('========', userdatax.userData.user.uid)
 
+			setfilteredResult(searchResult);
 			let location = null;
 			let latitude = null;
 			let longitude = null;
@@ -70,33 +76,47 @@ const SearchScreen: React.FC<Props> = ({}) => {
 					setLon(longitude);
 				});
 			}
+			
 		},
-		[ searchResult, errorMsg ]
+		[searchResult, errorMsg, loggedInUser ]
 	);
-	// useEffect(() => {
-	// 	let searchHis: any[] = [];
+	
 
-	// 	setshowHistorySpinner(true);
+	const [addHistory, { error }] = useMutation(CREATE_HISTORY, {
+		variables: {
+			
+			radius: ""+ radius,
+			body: "" +suggestedValue,
+			lat: "" +lat,
+			lon: "" +lon,
+			searchKey: searchKey,
+			uid: userdatax.userData.user.uid
+		
+		},
+		update(_, result) {
+			console.log('The rws: ', result)
+		}
+	})
+	const [fetchUserSearchHistory] = useMutation(FETCH_USER_HISTORY, {
+		variables: {
+			userId: userdatax.userData.user.uid
+		},
+		update(_, result) {
+			let searchHis: any[] = [];
+			console.log('The rws: ', result.data.fetchUserSearchHistory)
 
-	// 	console.log('load history');
-	// 	dataBase
-	// 		.collection('searchhistory')
-	// 		.get()
-	// 		.then((item) => {
-	// 			item.docs.forEach((doc, i) => {
-	// 				console.log('ITEM: ', doc.data());
-	// 				searchHis.push(doc.data());
-	// 			});
-	// 			setsearchHistory(searchHis);
-	// 			setshowHistorySpinner(false);
-	// 		})
-	// 		.catch((err) => {
-	// 			console.log('ERR: ', err);
-	// 		});
+			result.data.fetchUserSearchHistory.forEach((item:any, i:any) => {
+					// searchHis.push(doc.data());
+				console.log('===', item)
+				searchHis.push(item)
+				});
+				setsearchHistory(searchHis);
+				setshowHistorySpinner(false);
+				setshowHistoryLoading(false)
+		}
+	})
+	
 
-	// },[])
-
-	// console.log('search result:', searchResult);
 
 	const handleChange = (value: string) => {
 		console.log(`selected ${value}`);
@@ -131,22 +151,8 @@ const SearchScreen: React.FC<Props> = ({}) => {
 					setsearchHistory(searchHis)
 
 					if (suggestedValue) {
-						dataBase
-							.collection('searchhistory')
-							.add({
-								radius: radius ,
-								body: suggestedValue,
-								lat: lat,
-								lon: lon,
-								searchKey: searchKey
-								// searchQuery: searchKey
-							})
-							.then(function (docRef) {
-								console.log('Document written with ID: ', docRef.id);
-							})
-							.catch(function (error) {
-								console.error('Error adding document: ', error);
-							});
+						addHistory()
+
 					}
 					setshowSpinner(false);
 				}
@@ -167,27 +173,29 @@ const SearchScreen: React.FC<Props> = ({}) => {
 
 	const loadHistory = () => {
 		setshowHistoryLoading(true)
-		let searchHis: any[] = [];
+		fetchUserSearchHistory()
+		// console.log('====', bodyMen)
+		// let searchHis: any[] = [];
 
-		setshowHistorySpinner(true);
+		// setshowHistorySpinner(true);
 
-		dataBase
-			.collection('searchhistory')
-			.get()
-			.then((item) => {
-				item.docs.forEach((doc, i) => {
-					searchHis.push(doc.data());
-				});
-				setsearchHistory(searchHis);
-				setshowHistorySpinner(false);
-				setshowHistoryLoading(false)
+		// dataBase
+		// 	.collection('searchhistory')
+		// 	.get()
+		// 	.then((item) => {
+		// 		item.docs.forEach((doc, i) => {
+		// 			searchHis.push(doc.data());
+		// 		});
+		// 		setsearchHistory(searchHis);
+		// 		setshowHistorySpinner(false);
+		// 		setshowHistoryLoading(false)
 
-			})
-			.catch((err) => {
-				setshowHistoryLoading(false)
+		// 	})
+		// 	.catch((err) => {
+		// 		setshowHistoryLoading(false)
 
-				console.log('ERR: ', err);
-			});
+		// 		console.log('ERR: ', err);
+		// 	});
 	};
 
 	const handleSearchSuggestion = async (event: MouseEvent<HTMLElement>) => {
@@ -306,9 +314,10 @@ const SearchScreen: React.FC<Props> = ({}) => {
 			
 			<div style={{ backgroundColor: '#063861', height: 200, width: '100%' }} />
 
-			{errorMsg && errorMsg.length > 0 ? (
+			{/* { errorMsg.length > 0 ? alert(errorMsg) : null} */}
+			{/* {errorMsg && errorMsg.length > 0 ? (
 				<Alert message="Error" description={errorMsg} type="error" showIcon closable />
-			) : null}
+			) : null} */}
 
 			<div className='container'>
 			<p style={{ fontWeight: 'bold', color: 'white', fontSize: '18px' }}>Search for nearest Hospitals, Pharmacies, Clinics and Medical centers nearby...</p>
@@ -462,6 +471,47 @@ const FETCH_SEARCH_HISTORY = gql`
 	{	
 		getSearchHistory{
 		radius lat lon searchKey
+	}
+}
+`
+
+const CREATE_HISTORY = gql`
+mutation addHistory(
+	$radius:String!
+	$lat:String!
+	$lon:String!
+	$uid:String!
+	$body:String!
+	$searchKey:String!
+){
+	addHistory(
+		radius: $radius
+		lat: $lat
+		lon: $lon
+		uid: $uid
+		body: $body
+		searchKey: $searchKey
+	){
+		uid
+	}
+}
+`
+
+const FETCH_USER_HISTORY = gql`
+mutation fetchUserSearchHistory(
+	$userId:String!
+	
+){
+	fetchUserSearchHistory(
+		userId: $userId
+		
+	){
+		radius
+		lat
+		lon
+		uid
+		body
+		searchKey
 	}
 }
 `

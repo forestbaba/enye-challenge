@@ -74,7 +74,7 @@ const Register = () => {
 
             <div className='login-footer'>
                 <h5 className='new'>Already have an account ?</h5>
-                <h5 className='sign-up-text'><Link to='/login'>Login</Link></h5>
+                <h5 className='sign-up-text'><Link to='/'>Login</Link></h5>
             </div>
         </div>
 

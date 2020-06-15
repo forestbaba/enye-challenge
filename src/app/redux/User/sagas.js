@@ -23,7 +23,6 @@ function* checkLogin() {
     yield authentication.onAuthStateChanged(user => {
       if (user) {
         loggedIn.put(isLoginSuccess(user))
-        console.log('LoGGED IN: ', user)
       } else {
         loggedIn.put(isLoginFailure(user))
       }
